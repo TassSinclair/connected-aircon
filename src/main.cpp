@@ -23,7 +23,7 @@ void printState() {
 }
 
 boolean payloadIs(byte* payload, const char* known) {
-  return strcmp((char *) payload, known) == 0;
+  return strcasecmp((char *) payload, known) == 0;
 }
 
 void callback(const char *topic, byte *payload, unsigned int length)
