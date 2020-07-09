@@ -133,7 +133,7 @@ void callback(const char *topic, byte *payload, unsigned int length)
       comms.publishSwing(Comms::SWING_V_LOWEST);
     }
     else if(payloadIs(payload, Comms::SWING_V_AUTO)) {
-      ac.setSwingHorizontal(kPanasonicAcSwingVAuto);
+      ac.setSwingVertical(kPanasonicAcSwingVAuto);
       comms.publishSwing(Comms::SWING_V_AUTO);
     }
   }

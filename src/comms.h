@@ -54,7 +54,7 @@ private:
    void _publishAvailability();
    const char *_mqtt_server;
    static const char *_MQTT_CLIENT;
-      
+
    static const char *_GET_STATUS_TOPIC;
    static const char *_STATUS_AVAILABLE;
    static const char *_STATUS_UNAVAILABLE;
