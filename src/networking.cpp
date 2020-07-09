@@ -3,7 +3,7 @@
 Networking::Networking(
   const char *wifi_ssid,
   const char *wifi_password,
-  const char *hostname) : _client(), _wifi_ssid(wifi_ssid), _wifi_password(wifi_password), _hostname(hostname)
+  const char *host_name) : _client(), _wifi_ssid(wifi_ssid), _wifi_password(wifi_password), _host_name(host_name)
 {
 }
 
@@ -12,7 +12,7 @@ void Networking::connect()
   if (WiFi.status() != WL_CONNECTED)
   {
     WiFi.mode(WIFI_STA);
-    WiFi.hostname(_hostname);
+    WiFi.hostname(_host_name);
     WiFi.begin(_wifi_ssid, _wifi_password);
     Serial.print("WiFi connecting: ");
     Serial.println(_wifi_ssid);

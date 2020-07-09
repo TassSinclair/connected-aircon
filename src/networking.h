@@ -10,7 +10,7 @@ public:
    Networking(
       const char *wifi_ssid,
       const char *wifi_password,
-      const char *hostname
+      const char *host_name
    );
 
    void connect();
@@ -21,7 +21,7 @@ private:
    WiFiClient _client;
    const char *_wifi_ssid;
    const char *_wifi_password;
-   const char *_hostname;
+   const char *_host_name;
 };
 
 #endif
