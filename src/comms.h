@@ -14,7 +14,9 @@ public:
    void loop();
    void setCallback(MQTT_CALLBACK_SIGNATURE);
    void publishMode(const char* mode);
-   void publishTemp(int temp);
+   void publishActualTemp(float temp);
+   void publishActualHumidity(float humidity);
+   void publishTargetTemp(int temp);
    void publishFan(const char* fan);
    void publishSwing(const char* swing);
 
@@ -26,7 +28,7 @@ public:
    static const char *MODE_DRY;
    static const char *MODE_AUTO;
 
-   static const char *POST_TEMP_TOPIC;
+   static const char *POST_TARGET_TEMP_TOPIC;
 
    static const char *POST_FAN_TOPIC;
    static const char *FAN_MINIMUM;
@@ -60,10 +62,11 @@ private:
    static const char *_STATUS_UNAVAILABLE;
    static const char *_GET_POWER_TOPIC;
    static const char *_GET_MODE_TOPIC;
-   static const char *_GET_TEMP_TOPIC;
+   static const char *_GET_TARGET_TEMP_TOPIC;
+   static const char *_GET_ACTUAL_TEMP_TOPIC;
+   static const char *_GET_ACTUAL_HUMIDITY_TOPIC;
    static const char *_GET_FAN_TOPIC;
    static const char *_GET_SWING_TOPIC;
-
 };
 
 #endif

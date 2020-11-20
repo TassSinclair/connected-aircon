@@ -1,5 +1,6 @@
 #include <comms.h>
 #include <networking.h>
+#include <climate_sensor.h>
 #include "secrets.h"
 #include <PubSubClient.h>
 #include <Arduino.h>
@@ -7,8 +8,8 @@
 #include <IRsend.h>
 #include <ir_Panasonic.h>
 
-const uint16_t kIrLed = D2;
-IRPanasonicAc ac(kIrLed);
+const uint16_t IR_LED_PIN = D2;
+IRPanasonicAc ac(IR_LED_PIN);
 
 Networking networking(wifi_ssid, wifi_password, "connected-aircon");
 
@@ -16,6 +17,10 @@ Comms comms(
   PubSubClient(networking.getClient()),
   mqtt_server
 );
+
+const uint8_t DHT_PIN = D7;
+
+ClimateSensor climateSensor(comms, DHT_PIN);
 
 boolean payloadIs(byte* payload, const char* known) {
   return strcasecmp((char *) payload, known) == 0;
@@ -137,10 +142,10 @@ void callback(const char *topic, byte *payload, unsigned int length)
       comms.publishSwing(Comms::SWING_V_AUTO);
     }
   }
-  else if (strcmp(topic, Comms::POST_TEMP_TOPIC) == 0) {
+  else if (strcmp(topic, Comms::POST_TARGET_TEMP_TOPIC) == 0) {
     int temp = atoi((char*) payload);
     ac.setTemp(temp);
-    comms.publishTemp(temp);
+    comms.publishTargetTemp(temp);
   }
   printState();
   ac.send();
@@ -157,7 +162,7 @@ void setup() {
   ac.setMode(kPanasonicAcAuto);
   comms.publishMode(Comms::MODE_AUTO);
   ac.setTemp(20);
-  comms.publishTemp(20);
+  comms.publishTargetTemp(20);
   ac.setSwingVertical(kPanasonicAcSwingVAuto);
   ac.setSwingHorizontal(kPanasonicAcSwingHAuto);
   comms.publishSwing(Comms::SWING_AUTO);
@@ -166,9 +171,11 @@ void setup() {
   networking.connect();
   comms.connect();
   comms.setCallback(callback);
+  climateSensor.connect();
 }
 
 void loop() {
   networking.loop();
   comms.loop();
+  climateSensor.loop();
 }

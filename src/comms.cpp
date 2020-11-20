@@ -15,8 +15,10 @@ const char *Comms::MODE_FAN_ONLY = "fan_only";
 const char *Comms::MODE_AUTO = "auto";
 const char *Comms::MODE_DRY = "dry";
 
-const char *Comms::POST_TEMP_TOPIC = "connected-aircon/post/temp";
-const char *Comms::_GET_TEMP_TOPIC = "connected-aircon/get/temp";
+const char *Comms::POST_TARGET_TEMP_TOPIC = "connected-aircon/post/target-temp";
+const char *Comms::_GET_TARGET_TEMP_TOPIC = "connected-aircon/get/target-temp";
+const char *Comms::_GET_ACTUAL_TEMP_TOPIC = "connected-aircon/get/actual-temp";
+const char *Comms::_GET_ACTUAL_HUMIDITY_TOPIC = "connected-aircon/get/actual-humidity";
 
 const char *Comms::POST_FAN_TOPIC = "connected-aircon/post/fan";
 const char *Comms::_GET_FAN_TOPIC = "connected-aircon/get/fan";
@@ -86,11 +88,27 @@ void Comms::publishMode(const char* mode)
   );
 }
 
-void Comms::publishTemp(int temp)
+void Comms::publishTargetTemp(int temp)
 {
   _pubSubClient.publish(
-    _GET_TEMP_TOPIC,
+    _GET_TARGET_TEMP_TOPIC,
     String(temp).c_str()
+  );
+}
+
+void Comms::publishActualTemp(float temp)
+{
+  _pubSubClient.publish(
+    _GET_ACTUAL_TEMP_TOPIC,
+    String(temp).c_str()
+  );
+}
+
+void Comms::publishActualHumidity(float humidity)
+{
+  _pubSubClient.publish(
+    _GET_ACTUAL_HUMIDITY_TOPIC,
+    String(humidity).c_str()
   );
 }
 
