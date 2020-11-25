@@ -1,11 +1,12 @@
 #include "climate_sensor.h"
 
-ClimateSensor::ClimateSensor(Comms comms, uint8_t dhtPin) : _comms(comms), _dht(dhtPin, DHT22)
+ClimateSensor::ClimateSensor(Comms& comms, uint8_t pin) : _comms(comms), _dht(), _pin(pin)
 {
 }
 
-struct ClimateSensor::_dht_reading
+struct ClimateSensor::_dht_sample
 {
+  const char* status;
   float temperature;
   float humidity;
   float heat_index;
@@ -13,14 +14,22 @@ struct ClimateSensor::_dht_reading
 
 void ClimateSensor::connect()
 {
-  _dht.begin();
+  _dht.setup(_pin, DHTesp::DHT22);
 }
 
-ClimateSensor::_dht_reading ClimateSensor::_read()
+ClimateSensor::_dht_sample ClimateSensor::_sample()
 {
-  float temperature = _dht.readTemperature();
-  float humidity = _dht.readHumidity();
-  return ClimateSensor::_dht_reading {
+  const char* status = _dht.getStatusString();
+  float temperature = _dht.getTemperature();
+  float humidity = _dht.getHumidity();
+  Serial.print("status: ");
+  Serial.print(status);
+  Serial.print("\ttemp: ");
+  Serial.print(temperature);
+  Serial.print("\thumid: ");
+  Serial.println(humidity);
+  return ClimateSensor::_dht_sample {
+    status,
     temperature,
     humidity,
     _dht.computeHeatIndex(temperature, humidity, false)
@@ -29,15 +38,17 @@ ClimateSensor::_dht_reading ClimateSensor::_read()
 
 void ClimateSensor::loop()
 {
-  ClimateSensor::_dht_reading reading = _read();
-  if (!isnan(reading.temperature))
-  {
-    _comms.publishActualTemp(reading.temperature);
-    delay(50);
-  }
-  if (!isnan(reading.humidity))
-  {
-    _comms.publishActualHumidity(reading.humidity);
-    delay(50);
+  if (_last_sampling + _dht.getMinimumSamplingPeriod() < millis()) {
+    ClimateSensor::_dht_sample sample = _sample();
+    if (isnan(sample.temperature) || isnan(sample.humidity))
+    {
+      return;
+    }
+    _last_sampling = millis();
+    _comms.connect();
+    _comms.publishActualTemp(sample.temperature);
+    delay(100);
+    _comms.publishActualHumidity(sample.humidity);
+    delay(100);
   }
 }

@@ -8,7 +8,7 @@
 #include <IRsend.h>
 #include <ir_Panasonic.h>
 
-const uint16_t IR_LED_PIN = D2;
+const uint8_t IR_LED_PIN = D2;
 IRPanasonicAc ac(IR_LED_PIN);
 
 Networking networking(wifi_ssid, wifi_password, "connected-aircon");
@@ -152,9 +152,10 @@ void callback(const char *topic, byte *payload, unsigned int length)
 }
 
 void setup() {
+  Serial.begin(115200);
+
   ac.begin();
   delay(200);
-  
   ac.off();
   ac.setModel(kPanasonicRkr);
   ac.setFan(kPanasonicAcFanAuto);
@@ -167,7 +168,6 @@ void setup() {
   ac.setSwingHorizontal(kPanasonicAcSwingHAuto);
   comms.publishSwing(Comms::SWING_AUTO);
   
-  Serial.begin(115200);
   networking.connect();
   comms.connect();
   comms.setCallback(callback);
